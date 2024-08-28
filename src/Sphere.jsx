@@ -1,4 +1,4 @@
-import { useAspect } from '@react-three/drei';
+import { useAspect, useGLTF } from '@react-three/drei';
 import { useControls } from 'leva';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
@@ -9,8 +9,56 @@ import particlesVertexShader from './shaders/particles/vertex.glsl';
 const Sphere = () => {
     const pointsRef = useRef();
 
+    let particles = {};
+
+    const model = useGLTF('./model.glb');
+
+    const positions = model.scene.children.map((child) => {
+        return child.geometry.attributes.position;
+    });
+
+    // console.log(positions);
+    particles.maxCount = 0;
+
+    for (const position of positions) {
+        if (position.count > particles.maxCount) {
+            particles.maxCount = position.count;
+        }
+    }
+
+    // console.log(particles.maxCount);
+
+    particles.positions = [];
+    for (const position of positions) {
+        const originalArray = position.array;
+
+        const newArray = new Float32Array(particles.maxCount * 3);
+
+        for (let i = 0; i < particles.maxCount; i++) {
+            const i3 = i * 3;
+
+            if (i3 < originalArray.length) {
+                newArray[i3] = originalArray[i3];
+                newArray[i3 + 1] = originalArray[i3 + 1];
+                newArray[i3 + 2] = originalArray[i3 + 2];
+            } else {
+                newArray[i3] = 0;
+                newArray[i3 + 1] = 0;
+                newArray[i3 + 2] = 0;
+            }
+        }
+
+        particles.positions.push(new THREE.Float32BufferAttribute(newArray, 3));
+    }
+
+    // console.log(particles.positions);
+
+    particles.geometry = new THREE.BufferGeometry();
+    particles.geometry.setAttribute('position', particles.positions[0]);
+    particles.geometry.setIndex(null);
+
     const particleControls = useControls('Particles', {
-        uSize: { value: 15, min: 0.1, max: 50, step: 1 }
+        uSize: { value: 4, min: 0.1, max: 10, step: 0.1 }
     });
 
     // Sizes
@@ -46,18 +94,18 @@ const Sphere = () => {
     );
 
     // Geometry
-    const geometry = useMemo(() => {
-        const geo = new THREE.SphereGeometry(3);
-        geo.setIndex(null);
-        return geo;
-    }, []);
+    // const geometry = useMemo(() => {
+    //     const geo = new THREE.SphereGeometry(3);
+    //     geo.setIndex(null);
+    //     return geo;
+    // }, []);
 
     useEffect(() => {
         // Update uniforms on resize
         uniforms.uResolution.value.set(width * pixelRatio, height * pixelRatio);
     }, [width, height, pixelRatio, uniforms]);
 
-    return <points ref={pointsRef} args={[geometry, material]} />;
+    return <points ref={pointsRef} args={[particles.geometry, material]} />;
 };
 
 export default Sphere;
