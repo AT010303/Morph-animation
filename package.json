@@ -18,7 +18,7 @@
         "@react-three/postprocessing": "^2.16.2",
         "gsap": "^3.12.5",
         "howler": "^2.2.4",
-        "leva": "^0.9.35",
+        "leva": "^0.9.34",
         "postprocessing": "^6.35.5",
         "r3f-perf": "^7.2.1",
         "react": "^18.2.0",

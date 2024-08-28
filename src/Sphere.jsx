@@ -1,4 +1,5 @@
 import { useAspect } from '@react-three/drei';
+import { useControls } from 'leva';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
@@ -7,6 +8,10 @@ import particlesVertexShader from './shaders/particles/vertex.glsl';
 
 const Sphere = () => {
     const pointsRef = useRef();
+
+    const particleControls = useControls('Particles', {
+        uSize: { value: 15, min: 0.1, max: 50, step: 1 }
+    });
 
     // Sizes
     const [width, height, pixelRatio] = useAspect(
@@ -17,7 +22,7 @@ const Sphere = () => {
 
     const uniforms = useMemo(
         () => ({
-            uSize: { value: 0.4 },
+            uSize: { value: particleControls.uSize },
             uResolution: {
                 value: new THREE.Vector2(
                     width * pixelRatio,
@@ -25,7 +30,7 @@ const Sphere = () => {
                 )
             }
         }),
-        [width, height, pixelRatio]
+        [width, height, pixelRatio, particleControls]
     );
 
     const material = useMemo(
@@ -33,13 +38,19 @@ const Sphere = () => {
             new THREE.ShaderMaterial({
                 vertexShader: particlesVertexShader,
                 fragmentShader: particlesFragmentShader,
-                uniforms: uniforms
+                uniforms: uniforms,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
             }),
         [uniforms]
     );
 
     // Geometry
-    const geometry = useMemo(() => new THREE.SphereGeometry(3, 32, 32), []);
+    const geometry = useMemo(() => {
+        const geo = new THREE.SphereGeometry(3);
+        geo.setIndex(null);
+        return geo;
+    }, []);
 
     useEffect(() => {
         // Update uniforms on resize
