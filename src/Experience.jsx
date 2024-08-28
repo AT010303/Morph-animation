@@ -2,18 +2,20 @@ import { CameraControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Perf } from 'r3f-perf';
 
+import Sphere from './Sphere';
+
 const Experience = () => {
     return (
         <>
-            <Canvas>
+            <Canvas camera={{
+                fov: 35,
+                position: [0, 0, 8*2],
+            }}>
+                <color attach="background" args={['#111111']} />
                 <Perf position={'top-left'} />
                 <CameraControls />
-                <ambientLight intensity={1} />
-                <directionalLight position={[5, 5, 5]} />
-                <mesh>
-                    <boxGeometry />
-                    <meshStandardMaterial color={'lightgreen'} />
-                </mesh>
+
+                <Sphere />
             </Canvas>
         </>
     );
