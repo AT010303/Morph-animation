@@ -1,4 +1,7 @@
-import { useAspect, useGLTF } from '@react-three/drei';
+import { useAspect, useGLTF, useScroll } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
+// import { useFrame } from '@react-three/fiber';
+// import gsap from 'gsap';
 import { useControls } from 'leva';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
@@ -64,7 +67,7 @@ const Sphere = () => {
 
     const particleControls = useControls('Particles', {
         uSize: { value: 4, min: 0.1, max: 10, step: 0.1 },
-        progress: { value: 0, min:0, max:1, step:0.001 }
+        // progress: { value: 0, min:0, max:1, step:0.001 }
     });
 
     // Sizes
@@ -100,18 +103,18 @@ const Sphere = () => {
         [uniforms]
     );
 
-    // Geometry
-    // const geometry = useMemo(() => {
-    //     const geo = new THREE.SphereGeometry(3);
-    //     geo.setIndex(null);
-    //     return geo;
-    // }, []);
-
     useEffect(() => {
         // Update uniforms on resize
         uniforms.uResolution.value.set(width * pixelRatio, height * pixelRatio);
     }, [width, height, pixelRatio, uniforms]);
+    
+    const scroll = useScroll();
 
+    useFrame(()=> {
+        uniforms.uProgress.value = scroll.offset;
+        
+    });
+    
     return <points ref={pointsRef} args={[particles.geometry, material]} />;
 };
 
