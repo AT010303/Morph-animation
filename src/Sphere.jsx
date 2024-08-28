@@ -42,9 +42,13 @@ const Sphere = () => {
                 newArray[i3 + 1] = originalArray[i3 + 1];
                 newArray[i3 + 2] = originalArray[i3 + 2];
             } else {
-                newArray[i3] = 0;
-                newArray[i3 + 1] = 0;
-                newArray[i3 + 2] = 0;
+
+                const ramdomIndex = Math.floor(position.count * Math.random()) * 3;
+                // console.log(ramdomIndex);
+                
+                newArray[i3] = originalArray[ramdomIndex];
+                newArray[i3 + 1] = originalArray[ramdomIndex + 1];
+                newArray[i3 + 2] = originalArray[ramdomIndex + 2];
             }
         }
 
@@ -55,10 +59,12 @@ const Sphere = () => {
 
     particles.geometry = new THREE.BufferGeometry();
     particles.geometry.setAttribute('position', particles.positions[0]);
-    particles.geometry.setIndex(null);
+    // particles.geometry.setIndex(null);
+    particles.geometry.setAttribute("aPositionTarget", particles.positions[1]);
 
     const particleControls = useControls('Particles', {
-        uSize: { value: 4, min: 0.1, max: 10, step: 0.1 }
+        uSize: { value: 4, min: 0.1, max: 10, step: 0.1 },
+        progress: { value: 0, min:0, max:1, step:0.001 }
     });
 
     // Sizes
@@ -76,7 +82,8 @@ const Sphere = () => {
                     width * pixelRatio,
                     height * pixelRatio
                 )
-            }
+            },
+            uProgress: {value: particleControls.progress},
         }),
         [width, height, pixelRatio, particleControls]
     );
