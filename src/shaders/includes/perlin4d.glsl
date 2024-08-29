@@ -3,9 +3,11 @@
 //
 // vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
 // vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
-vec4 fade(vec4 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
+vec4 fade(vec4 t) {
+  return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+}
 
-float perlin4d(vec4 P){
+float perlin4d(vec4 P) {
   vec4 Pi0 = floor(P); // Integer part for indexing
   vec4 Pi1 = Pi0 + 1.0; // Integer part + 1
   Pi0 = mod(Pi0, 289.0);
@@ -71,22 +73,22 @@ float perlin4d(vec4 P){
   gx11 -= sw11 * (step(0.0, gx11) - 0.5);
   gy11 -= sw11 * (step(0.0, gy11) - 0.5);
 
-  vec4 g0000 = vec4(gx00.x,gy00.x,gz00.x,gw00.x);
-  vec4 g1000 = vec4(gx00.y,gy00.y,gz00.y,gw00.y);
-  vec4 g0100 = vec4(gx00.z,gy00.z,gz00.z,gw00.z);
-  vec4 g1100 = vec4(gx00.w,gy00.w,gz00.w,gw00.w);
-  vec4 g0010 = vec4(gx10.x,gy10.x,gz10.x,gw10.x);
-  vec4 g1010 = vec4(gx10.y,gy10.y,gz10.y,gw10.y);
-  vec4 g0110 = vec4(gx10.z,gy10.z,gz10.z,gw10.z);
-  vec4 g1110 = vec4(gx10.w,gy10.w,gz10.w,gw10.w);
-  vec4 g0001 = vec4(gx01.x,gy01.x,gz01.x,gw01.x);
-  vec4 g1001 = vec4(gx01.y,gy01.y,gz01.y,gw01.y);
-  vec4 g0101 = vec4(gx01.z,gy01.z,gz01.z,gw01.z);
-  vec4 g1101 = vec4(gx01.w,gy01.w,gz01.w,gw01.w);
-  vec4 g0011 = vec4(gx11.x,gy11.x,gz11.x,gw11.x);
-  vec4 g1011 = vec4(gx11.y,gy11.y,gz11.y,gw11.y);
-  vec4 g0111 = vec4(gx11.z,gy11.z,gz11.z,gw11.z);
-  vec4 g1111 = vec4(gx11.w,gy11.w,gz11.w,gw11.w);
+  vec4 g0000 = vec4(gx00.x, gy00.x, gz00.x, gw00.x);
+  vec4 g1000 = vec4(gx00.y, gy00.y, gz00.y, gw00.y);
+  vec4 g0100 = vec4(gx00.z, gy00.z, gz00.z, gw00.z);
+  vec4 g1100 = vec4(gx00.w, gy00.w, gz00.w, gw00.w);
+  vec4 g0010 = vec4(gx10.x, gy10.x, gz10.x, gw10.x);
+  vec4 g1010 = vec4(gx10.y, gy10.y, gz10.y, gw10.y);
+  vec4 g0110 = vec4(gx10.z, gy10.z, gz10.z, gw10.z);
+  vec4 g1110 = vec4(gx10.w, gy10.w, gz10.w, gw10.w);
+  vec4 g0001 = vec4(gx01.x, gy01.x, gz01.x, gw01.x);
+  vec4 g1001 = vec4(gx01.y, gy01.y, gz01.y, gw01.y);
+  vec4 g0101 = vec4(gx01.z, gy01.z, gz01.z, gw01.z);
+  vec4 g1101 = vec4(gx01.w, gy01.w, gz01.w, gw01.w);
+  vec4 g0011 = vec4(gx11.x, gy11.x, gz11.x, gw11.x);
+  vec4 g1011 = vec4(gx11.y, gy11.y, gz11.y, gw11.y);
+  vec4 g0111 = vec4(gx11.z, gy11.z, gz11.z, gw11.z);
+  vec4 g1111 = vec4(gx11.w, gy11.w, gz11.w, gw11.w);
 
   vec4 norm00 = taylorInvSqrt(vec4(dot(g0000, g0000), dot(g0100, g0100), dot(g1000, g1000), dot(g1100, g1100)));
   g0000 *= norm00.x;
