@@ -92,17 +92,27 @@ const Sphere = () => {
     );
 
     const particleControls = useControls('Particles', {
-        uSize: { value: 4.0, min: 0.1, max: 10, step: 0.1 },
+        uSize: { value: 6.0, min: 0.1, max: 10, step: 0.1 },
         progress: { value: 0, min: 0, max: 1, step: 0.001 },
         DistortionFrequency: { value: 0.2, min: 0.0, max: 10.0 },
         DistortionStrength: { value: 2.0, min: 0.0, max: 10.0 },
         DisplacementFrequency: { value: 0.6, min: 0.0, max: 10.0 },
         DisplacementStrength: { value: 0.5, min: 0.0, max: 3.0, step: 0.1 },
-        TimeFrequency: { value: 0.5, min: 0.0, max: 1.0, step: 0.01 }
+        TimeFrequency: { value: 0.5, min: 0.0, max: 1.0, step: 0.01 },
+        DistortionFrequencyWave: { value: 0.1, min: 0.0, max: 1.0, step: 0.01 },
+        DistortionStrengthWave: { value: 5.0, min: 0.0, max: 10.0, step: 0.01 },
+        DisplacementFrequencyWave: {
+            value: 0.2,
+            min: 0.0,
+            max: 1.0,
+            step: 0.01
+        },
+        DisplacementStrengthWave: { value: 1.5, min: 0.0, max: 5.0, step: 0.1 }
     });
 
     const particleColorControls = useControls('Particles Colors', {
         colorA: '#EB2329',
+        // colorA: '#0000ff',
         colorB: '#ff0000'
     });
 
@@ -139,7 +149,19 @@ const Sphere = () => {
             },
             uTimeFrequency: { value: particleControls.TimeFrequency },
             uColorA: { value: new THREE.Color(particles.colorA) },
-            uColorB: { value: new THREE.Color(particles.colorB) }
+            uColorB: { value: new THREE.Color(particles.colorB) },
+            uDistortionFrequencyWave: {
+                value: particleControls.DistortionFrequencyWave
+            },
+            uDistortionStrengthWave: {
+                value: particleControls.DistortionStrengthWave
+            },
+            uDisplacementFrequencyWave: {
+                value: particleControls.DisplacementFrequencyWave
+            },
+            uDisplacementStrengthWave: {
+                value: particleControls.DisplacementStrengthWave
+            }
         }),
         [
             width,

@@ -7,7 +7,7 @@ import Sphere from './Sphere';
 
 const Experience = () => {
     const controls = useControls('experience', {
-        backgroundColor: '#000000'
+        backgroundColor: '#070010'
     });
 
     return (
