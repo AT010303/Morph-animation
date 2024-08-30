@@ -80,14 +80,14 @@ void main() {
     vec3 mixedPosition = mix(position, aPositionTarget, progress);
 
 
-    if(progress < 0.25){
+    if(progress < 0.35){
         mixedPosition = applyWaveFunction(mixedPosition);
     }
 
     // displace the position
     vec4 displacedPosition = getDisplacedPosition(mixedPosition) * 0.01;
 
-    if(progress > 0.25){
+    if(progress > 0.55){
         displacedPosition.y -= progress * 0.01;
     }
     
