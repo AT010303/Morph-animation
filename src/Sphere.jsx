@@ -12,7 +12,7 @@ const Sphere = () => {
 
     let particles = {};
 
-    const model = useGLTF('./model.glb');
+    const model = useGLTF('./model3.glb');
 
     const positions = model.scene.children.map((child) => {
         return child.geometry.attributes.position;
@@ -37,19 +37,19 @@ const Sphere = () => {
 
         for (let i = 0; i < particles.maxCount; i++) {
             const i3 = i * 3;
-            if (position.count > 3000) {
+            if (position.count > 33130) {
                 if (i3 < originalArray.length) {
-                    newArray[i3] = originalArray[i3];
-                    newArray[i3 + 1] = originalArray[i3 + 1];
-                    newArray[i3 + 2] = originalArray[i3 + 2];
+                    newArray[i3] = originalArray[i3] * 3.0;
+                    newArray[i3 + 1] = originalArray[i3 + 1] * 3.0 ;
+                    newArray[i3 + 2] = originalArray[i3 + 2] * 3.0 ;
                 } else {
                     const ramdomIndex =
                         Math.floor(position.count * Math.random()) * 3;
                     // console.log(ramdomIndex);
 
-                    newArray[i3] = originalArray[ramdomIndex];
-                    newArray[i3 + 1] = originalArray[ramdomIndex + 1];
-                    newArray[i3 + 2] = originalArray[ramdomIndex + 2];
+                    newArray[i3] = originalArray[ramdomIndex] * 3.0;
+                    newArray[i3 + 1] = originalArray[ramdomIndex + 1] * 3.0;
+                    newArray[i3 + 2] = originalArray[ramdomIndex + 2] * 3.0;
                 }
             } else {
                 if (i3 < originalArray.length) {
@@ -69,7 +69,7 @@ const Sphere = () => {
             }
         }
 
-        // console.log(position.count);
+        console.log(position.count);
 
         particles.positions.push(new THREE.Float32BufferAttribute(newArray, 3));
     }
@@ -83,7 +83,7 @@ const Sphere = () => {
     }
 
     particles.geometry = new THREE.BufferGeometry();
-    particles.geometry.setAttribute('position', particles.positions[1]);
+    particles.geometry.setAttribute('position', particles.positions[2]);
     // particles.geometry.setIndex(null);
     particles.geometry.setAttribute('aPositionTarget', particles.positions[0]);
     particles.geometry.setAttribute(
@@ -92,7 +92,7 @@ const Sphere = () => {
     );
 
     const particleControls = useControls('Particles', {
-        uSize: { value: 6.0, min: 0.1, max: 10, step: 0.1 },
+        uSize: { value: 1.0, min: 0.1, max: 10, step: 0.1 },
         progress: { value: 0, min: 0, max: 1, step: 0.001 },
         DistortionFrequency: { value: 0.2, min: 0.0, max: 10.0 },
         DistortionStrength: { value: 2.0, min: 0.0, max: 10.0 },
@@ -208,5 +208,5 @@ const Sphere = () => {
     return <points ref={pointsRef} args={[particles.geometry, material]} />;
 };
 
-useGLTF.preload('./model.glb');
+useGLTF.preload('./model3.glb');
 export default Sphere;

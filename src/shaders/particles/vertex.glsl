@@ -28,6 +28,7 @@ varying vec3 vColor;
 #include ../includes/perlin4d.glsl
 #include ../includes/perlin3d.glsl
 #include ../includes/waves.glsl
+#include ../includes/perodic.glsl
 
 vec4 getDisplacedPosition(vec3 _position) {
     vec3 displacementPosition = _position;
@@ -61,6 +62,20 @@ vec3 applyWaveFunction(vec3 position) {
     return position + waveDisplacement + distortion;
 }
 
+mat3 rotation3dY(float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+
+  return mat3(
+    c, 0.0, -s,
+    0.0, 1.0, 0.0,
+    s, 0.0, c
+  );
+}
+
+vec3 rotateY(vec3 v, float angle) {
+  return rotation3dY(angle) * v;
+}
 
 void main() {
     // float progress = 0.5;
@@ -80,16 +95,41 @@ void main() {
     vec3 mixedPosition = mix(position, aPositionTarget, progress);
 
 
-    if(progress < 0.35){
+    if(progress < 0.45){
         mixedPosition = applyWaveFunction(mixedPosition);
     }
-
+    float distortion = pnoise((mixedPosition + uTime), vec3(10.0) * 2.0) * 1.0;
     // displace the position
+    vec3 pos = mixedPosition +  distortion * 0.25;
+
     vec4 displacedPosition = getDisplacedPosition(mixedPosition) * 0.01;
 
-    if(progress > 0.55){
-        displacedPosition.y -= progress * 0.01;
+    displacedPosition.xyz += pos;
+    
+
+    
+
+        
+
+    if(progress >= 0.45){
+        displacedPosition.xyz += pos.xyz * 0.01;
+        displacedPosition.xyz *= 1.0;
+        
+        float angle = sin( mixedPosition.y * 0.4   + uTime  * 0.03) * 8.0 ;
+        displacedPosition.xyz= rotateY(displacedPosition.xyz, angle* PI * 0.1);
     }
+
+    
+
+    if(progress < 0.25){
+        displacedPosition = getDisplacedPosition(mixedPosition) * 0.01;
+        displacedPosition.x *= 150.0;
+        displacedPosition.y *= 150.0;
+        displacedPosition.z *= 150.0;
+
+    }
+    displacedPosition.y -= progress * 0.1;
+
     
     // Final position
     vec4 modelPosition = modelMatrix * vec4(displacedPosition.xyz, 1.0);
@@ -98,7 +138,14 @@ void main() {
     gl_Position = projectedPosition;
 
     // Point size
-    gl_PointSize = aSize * uSize * uResolution.y * 3.0 + 0.2;
+    float size = uSize;
+    if(progress > 0.5){
+        size -= progress *0.5;
+    }
+
+    float dist = viewPosition.z * 200.0;
+    
+    gl_PointSize =  dist * size * uResolution.y * 10.0;
     gl_PointSize *= (1.0 / -viewPosition.z);
 
     //varyings
