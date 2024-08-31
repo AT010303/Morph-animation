@@ -12,7 +12,7 @@ const Sphere = () => {
 
     let particles = {};
 
-    const model = useGLTF('./model3.glb');
+    const model = useGLTF('./model4.glb');
 
     const positions = model.scene.children.map((child) => {
         return child.geometry.attributes.position;
@@ -83,7 +83,7 @@ const Sphere = () => {
     }
 
     particles.geometry = new THREE.BufferGeometry();
-    particles.geometry.setAttribute('position', particles.positions[2]);
+    particles.geometry.setAttribute('position', particles.positions[1]);
     // particles.geometry.setIndex(null);
     particles.geometry.setAttribute('aPositionTarget', particles.positions[0]);
     particles.geometry.setAttribute(
@@ -208,5 +208,5 @@ const Sphere = () => {
     return <points ref={pointsRef} args={[particles.geometry, material]} />;
 };
 
-useGLTF.preload('./model3.glb');
+useGLTF.preload('./model4.glb');
 export default Sphere;
