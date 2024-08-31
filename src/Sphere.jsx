@@ -113,7 +113,9 @@ const Sphere = () => {
     const particleColorControls = useControls('Particles Colors', {
         colorA: '#EB2329',
         // colorA: '#0000ff',
-        colorB: '#ff0000'
+        colorB: '#ff0000',
+        colorC: '#200000',
+
     });
 
     // Sizes
@@ -125,6 +127,7 @@ const Sphere = () => {
 
     particles.colorA = particleColorControls.colorA;
     particles.colorB = particleColorControls.colorB;
+    particles.colorC = particleColorControls.colorC;
 
     const uniforms = useMemo(
         () => ({
@@ -150,6 +153,7 @@ const Sphere = () => {
             uTimeFrequency: { value: particleControls.TimeFrequency },
             uColorA: { value: new THREE.Color(particles.colorA) },
             uColorB: { value: new THREE.Color(particles.colorB) },
+            uColorC: { value: new THREE.Color(particles.colorC) },
             uDistortionFrequencyWave: {
                 value: particleControls.DistortionFrequencyWave
             },
@@ -169,7 +173,8 @@ const Sphere = () => {
             pixelRatio,
             particleControls,
             particles.colorA,
-            particles.colorB
+            particles.colorB,
+            particles.colorC
         ]
     );
 

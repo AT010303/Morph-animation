@@ -16,6 +16,8 @@ uniform float uProgress;
 
 uniform vec3 uColorA;
 uniform vec3 uColorB;
+uniform vec3 uColorC;
+
 
 attribute vec3 aPositionTarget;
 attribute float aSize;
@@ -84,7 +86,7 @@ void main() {
 
     vec3 mixedPosition = mix(position, aPositionTarget, progress);
 
-    if(progress < 0.45) {
+    if(progress <= 0.45) {
         mixedPosition = applyWaveFunction(mixedPosition);
     }
     float distortion = pnoise((mixedPosition + uTime * 0.1), vec3(10.0) * 2.0) * 1.0;
@@ -95,12 +97,10 @@ void main() {
 
     displacedPosition.xyz += pos;
 
-    if(progress >= 0.2) {
-        displacedPosition.xyz += pos.xyz * 0.01;
-        displacedPosition.xyz *= 1.0;
-
-        float angle = sin(mixedPosition.y * 0.45 + 5.0 ) * 10.0;
-        displacedPosition.xyz = rotateY(displacedPosition.xyz, angle * PI * 0.01);
+    if(progress >= 0.15) {
+        displacedPosition.xyz += pos.xyz * 0.05;
+        float angle = mod(sin(mixedPosition.y * 0.5 + uTime * 0.5) * 10.0, 360.0) ;
+        displacedPosition.xyz = rotateY(displacedPosition.xyz, angle * PI * 0.1);
     }
 
     if(progress < 0.25) {
@@ -130,5 +130,13 @@ void main() {
     gl_PointSize *= (1.0 / -viewPosition.z);
 
     //varyings
-    vColor = mix(uColorA, uColorB, noise);
+
+    // distortion = pow(distortion, 3.0);
+
+    if(progress > 0.95){
+        vColor = mix(uColorC, uColorA, pow(distortion, 2.0));
+    }else{
+        vColor = mix(uColorB, uColorA , pow(distortion, 2.0));
+    }
+    
 }
