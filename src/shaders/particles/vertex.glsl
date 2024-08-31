@@ -87,7 +87,7 @@ void main() {
     if(progress < 0.45) {
         mixedPosition = applyWaveFunction(mixedPosition);
     }
-    float distortion = pnoise((mixedPosition + uTime), vec3(10.0) * 2.0) * 1.0;
+    float distortion = pnoise((mixedPosition + uTime * 0.1), vec3(10.0) * 2.0) * 1.0;
     // displace the position
     vec3 pos = mixedPosition + distortion * 0.25;
 
@@ -99,8 +99,8 @@ void main() {
         displacedPosition.xyz += pos.xyz * 0.01;
         displacedPosition.xyz *= 1.0;
 
-        float angle = sin(mixedPosition.y * 0.45 + uTime * 0.01) * 8.0;
-        displacedPosition.xyz = rotateY(displacedPosition.xyz, angle * PI * 0.1);
+        float angle = sin(mixedPosition.y * 0.45 + 5.0 ) * 10.0;
+        displacedPosition.xyz = rotateY(displacedPosition.xyz, angle * PI * 0.01);
     }
 
     if(progress < 0.25) {
