@@ -92,7 +92,7 @@ const Sphere = () => {
     );
 
     const particleControls = useControls('Particles', {
-        uSize: { value: 1.0, min: 0.1, max: 10, step: 0.1 },
+        uSize: { value: 1.2, min: 0.1, max: 10, step: 0.1 },
         progress: { value: 0, min: 0, max: 1, step: 0.001 },
         DistortionFrequency: { value: 0.2, min: 0.0, max: 10.0 },
         DistortionStrength: { value: 2.0, min: 0.0, max: 10.0 },
