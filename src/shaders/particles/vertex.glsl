@@ -95,7 +95,7 @@ void main() {
 
     displacedPosition.xyz += pos;
 
-    if(progress >= 0.45) {
+    if(progress >= 0.2) {
         displacedPosition.xyz += pos.xyz * 0.01;
         displacedPosition.xyz *= 1.0;
 

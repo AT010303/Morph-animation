@@ -9,3 +9,7 @@ body,
     /* background-color: #000000;
     background-image: linear-gradient(0deg, #000000 80%, #7a161a 100%); */
 }
+
+::-webkit-scrollbar {
+    display: none;
+}

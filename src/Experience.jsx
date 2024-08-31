@@ -7,7 +7,7 @@ import Sphere from './Sphere';
 
 const Experience = () => {
     const controls = useControls('experience', {
-        backgroundColor: '#070010'
+        backgroundColor: '#000308'
     });
 
     return (
@@ -19,12 +19,10 @@ const Experience = () => {
                     position: [0, 0.0, 18]
                 }}
             >
-                
                 <color attach="background" args={[controls.backgroundColor]} />
-                <fog attach="fog" args={['#f0f0f0', 0, 100]} />
-                <Perf position={'top-left'} />
+                <Perf position={'bottom-left'} />
                 <OrbitControls enabled={false} enableZoom={false} />
-                <ScrollControls pages={2} damping={0.7}>
+                <ScrollControls pages={2} damping={0.65}>
                     <Sphere />
                 </ScrollControls>
             </Canvas>
