@@ -42,8 +42,6 @@ vec4 getDisplacedPosition(vec3 _position) {
     return vec4(displacedPosition, perlinStrength);
 }
 
-
-
 vec3 applyWaveFunction(vec3 position) {
     // Generate Perlin noise based on position and time
     float perlinValue = perlin3d(vec3(position.xz * uDisplacementFrequencyWave, uTime * uTimeFrequency * 0.65));
@@ -52,29 +50,21 @@ vec3 applyWaveFunction(vec3 position) {
     vec3 waveDisplacement = vec3(0.0, perlinValue * uDisplacementStrengthWave, 0.0);
 
     // Apply distortion if needed
-    vec3 distortion = vec3(
-        perlin3d(position * uDistortionFrequencyWave + vec3(1.0, 0.0, 0.0)) - 0.5 ,
-        -perlin3d(position * uDistortionFrequencyWave + vec3(0.0, 1.0, 0.0)) * 0.3 + 0.5 ,
-        -perlin3d(position * uDistortionFrequencyWave + vec3(0.0, 0.0, 1.0))  -1.0
-    ) * uDistortionStrengthWave;
+    vec3 distortion = vec3(perlin3d(position * uDistortionFrequencyWave + vec3(1.0, 0.0, 0.0)) - 0.5, -perlin3d(position * uDistortionFrequencyWave + vec3(0.0, 1.0, 0.0)) * 0.3 + 0.5, -perlin3d(position * uDistortionFrequencyWave + vec3(0.0, 0.0, 1.0)) - 1.0) * uDistortionStrengthWave;
 
     // Final displaced position with wave and distortion
     return position + waveDisplacement + distortion;
 }
 
 mat3 rotation3dY(float angle) {
-  float s = sin(angle);
-  float c = cos(angle);
+    float s = sin(angle);
+    float c = cos(angle);
 
-  return mat3(
-    c, 0.0, -s,
-    0.0, 1.0, 0.0,
-    s, 0.0, c
-  );
+    return mat3(c, 0.0, -s, 0.0, 1.0, 0.0, s, 0.0, c);
 }
 
 vec3 rotateY(vec3 v, float angle) {
-  return rotation3dY(angle) * v;
+    return rotation3dY(angle) * v;
 }
 
 void main() {
@@ -94,34 +84,26 @@ void main() {
 
     vec3 mixedPosition = mix(position, aPositionTarget, progress);
 
-
-    if(progress < 0.45){
+    if(progress < 0.45) {
         mixedPosition = applyWaveFunction(mixedPosition);
     }
     float distortion = pnoise((mixedPosition + uTime), vec3(10.0) * 2.0) * 1.0;
     // displace the position
-    vec3 pos = mixedPosition +  distortion * 0.25;
+    vec3 pos = mixedPosition + distortion * 0.25;
 
     vec4 displacedPosition = getDisplacedPosition(mixedPosition) * 0.01;
 
     displacedPosition.xyz += pos;
-    
 
-    
-
-        
-
-    if(progress >= 0.45){
+    if(progress >= 0.45) {
         displacedPosition.xyz += pos.xyz * 0.01;
         displacedPosition.xyz *= 1.0;
-        
-        float angle = sin( mixedPosition.y * 0.4   + uTime  * 0.03) * 8.0 ;
-        displacedPosition.xyz= rotateY(displacedPosition.xyz, angle* PI * 0.1);
+
+        float angle = sin(mixedPosition.y * 0.45 + uTime * 0.01) * 8.0;
+        displacedPosition.xyz = rotateY(displacedPosition.xyz, angle * PI * 0.1);
     }
 
-    
-
-    if(progress < 0.25){
+    if(progress < 0.25) {
         displacedPosition = getDisplacedPosition(mixedPosition) * 0.01;
         displacedPosition.x *= 150.0;
         displacedPosition.y *= 150.0;
@@ -130,7 +112,6 @@ void main() {
     }
     displacedPosition.y -= progress * 0.1;
 
-    
     // Final position
     vec4 modelPosition = modelMatrix * vec4(displacedPosition.xyz, 1.0);
     vec4 viewPosition = viewMatrix * modelPosition;
@@ -139,12 +120,13 @@ void main() {
 
     // Point size
     float size = uSize;
-    if(progress > 0.5){
-        size -= progress *0.5;
+    if(progress > 0.5) {
+        size -= progress * 0.4;
+    } else {
+        size = uSize * 1.5;
     }
 
-    
-    gl_PointSize =  aSize * size * uResolution.y * 10.0 ;
+    gl_PointSize = aSize * size * uResolution.y * 10.0;
     gl_PointSize *= (1.0 / -viewPosition.z);
 
     //varyings
