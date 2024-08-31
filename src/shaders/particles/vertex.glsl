@@ -143,9 +143,8 @@ void main() {
         size -= progress *0.5;
     }
 
-    float dist = viewPosition.z * 200.0;
     
-    gl_PointSize =  dist * size * uResolution.y * 10.0;
+    gl_PointSize =  aSize * size * uResolution.y * 10.0 ;
     gl_PointSize *= (1.0 / -viewPosition.z);
 
     //varyings
