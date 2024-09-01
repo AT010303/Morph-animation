@@ -80,6 +80,21 @@ vec3 rotateY(vec3 v, float angle) {
     return rotation3dY(angle) * v;
 }
 
+
+// Function to create a Z-axis rotation matrix
+mat3 rotation3dZ(float angle) {
+    float s = sin(angle);
+    float c = cos(angle);
+
+    return mat3(c, s, 0.0,
+               -s, c, 0.0,
+                0.0, 0.0, 1.0);
+}
+
+vec3 rotateZ(vec3 v, float angle) {
+    return rotation3dZ(angle) * v;
+}
+
 void main() {
     // float progress = 0.5;
 
@@ -124,8 +139,18 @@ void main() {
     }
     displacedPosition.y -= pow(progress * 1.2, 3.0);
 
+    
+
     // Final position
     vec4 modelPosition = modelMatrix * vec4(displacedPosition.xyz, 1.0);
+
+    // tilt the modelPosition around the z axis
+    float tiltAngle =  pow(progress, 10.0) + 0.05;
+    
+    modelPosition.xyz = rotateZ(modelPosition.xyz, tiltAngle);
+    modelPosition.x -= (progress + 0.5);
+    modelPosition.y -= (progress);
+
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * viewPosition;
     gl_Position = projectedPosition;
