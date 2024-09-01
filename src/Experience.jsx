@@ -1,4 +1,4 @@
-import { OrbitControls, ScrollControls } from '@react-three/drei';
+import { ScrollControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Leva,useControls } from 'leva';
 import { Perf } from 'r3f-perf';
@@ -18,10 +18,12 @@ const Experience = () => {
                     fov: 35,
                     position: [0, 0.0, 18]
                 }}
+
+                className='canvas'
             >
                 <color attach="background" args={[controls.backgroundColor]} />
                 <Perf position={'bottom-left'} />
-                <OrbitControls enabled={false} enableZoom={false} />
+                {/* <OrbitControls enabled={false} enableZoom={false} /> */}
                 <ScrollControls pages={2} damping={0.65}>
                     <Sphere />
                 </ScrollControls>
