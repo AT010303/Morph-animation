@@ -18,7 +18,6 @@ uniform vec3 uColorA;
 uniform vec3 uColorB;
 uniform vec3 uColorC;
 
-
 attribute vec3 aPositionTarget;
 attribute float aSize;
 
@@ -37,6 +36,18 @@ vec4 getDisplacedPosition(vec3 _position) {
     displacementPosition += perlin4d(vec4(displacementPosition * uDistortionFrequency, uTime * uTimeFrequency)) * uDistortionStrength;
 
     float perlinStrength = perlin4d(vec4(displacementPosition * uDisplacementFrequency, uTime * uTimeFrequency));
+
+    vec3 displacedPosition = _position;
+    displacedPosition += normalize(_position) * perlinStrength * uDisplacementStrength;
+
+    return vec4(displacedPosition, perlinStrength);
+}
+
+vec4 getSphereDisplacedPosition(vec3 _position) {
+    vec3 displacementPosition = _position;
+    displacementPosition += perlin4d(vec4(displacementPosition * uDistortionFrequency, 10.0 * uTimeFrequency)) * uDistortionStrength;
+
+    float perlinStrength = perlin4d(vec4(displacementPosition * uDisplacementFrequency, 10.0 * uTimeFrequency));
 
     vec3 displacedPosition = _position;
     displacedPosition += normalize(_position) * perlinStrength * uDisplacementStrength;
@@ -89,7 +100,7 @@ void main() {
     if(progress <= 0.45) {
         mixedPosition = applyWaveFunction(mixedPosition);
     }
-    float distortion = pnoise((mixedPosition + uTime * 0.1), vec3(10.0) * 2.0) * 1.0;
+    float distortion = pnoise((mixedPosition + 100.0 * 0.1), vec3(10.0) * 2.0) * 1.0;
     // displace the position
     vec3 pos = mixedPosition + distortion * 0.25;
 
@@ -97,9 +108,10 @@ void main() {
 
     displacedPosition.xyz += pos;
 
-    if(progress >= 0.15) {
-        displacedPosition.xyz += pos.xyz * 0.05;
-        float angle = mod(sin(mixedPosition.y * 0.5 + uTime * 0.5) * 10.0, 360.0) ;
+    if(progress >= 0.25) {
+        displacedPosition = getSphereDisplacedPosition(mixedPosition) * 0.01;
+        displacedPosition.xyz += pos.xyz * 1.1;
+        float angle = mod(sin(mixedPosition.y * 0.5 + uTime * 0.25) * 10.0, 360.0);
         displacedPosition.xyz = rotateY(displacedPosition.xyz, angle * PI * 0.1);
     }
 
@@ -110,7 +122,7 @@ void main() {
         displacedPosition.z *= 150.0;
 
     }
-    displacedPosition.y -= progress * 0.1;
+    displacedPosition.y -= pow(progress * 1.2, 3.0);
 
     // Final position
     vec4 modelPosition = modelMatrix * vec4(displacedPosition.xyz, 1.0);
@@ -127,16 +139,19 @@ void main() {
     }
 
     gl_PointSize = aSize * size * uResolution.y * 10.0;
-    gl_PointSize *= (1.0 / -viewPosition.z);
+    if(progress > 0.75) {
+        gl_PointSize = ((pow((aSize * distortion * size) + 0.6, 2.0)) * ((0.5 + uResolution.y) * 12.0));
+    }
+    gl_PointSize *= (0.9 / -viewPosition.z);
 
     //varyings
 
     // distortion = pow(distortion, 3.0);
 
-    if(progress > 0.95){
+    if(progress >= 0.85) {
         vColor = mix(uColorC, uColorA, pow(distortion, 2.0));
-    }else{
-        vColor = mix(uColorB, uColorA , pow(distortion, 2.0));
+    } else {
+        vColor = mix(uColorB, uColorA, pow(distortion, 2.0));
     }
-    
+
 }
