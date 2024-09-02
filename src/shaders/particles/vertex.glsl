@@ -1,10 +1,7 @@
 precision highp float;
 
 uniform float uTime;
-uniform float uDistortionFrequency;
-uniform float uDistortionStrength;
-uniform float uDisplacementFrequency;
-uniform float uDisplacementStrength;
+uniform float uRotationX;
 uniform float uTimeFrequency;
 
 uniform float uDistortionFrequencyWave;
@@ -18,7 +15,6 @@ uniform float uProgress;
 
 uniform vec3 uColorA;
 uniform vec3 uColorB;
-uniform vec3 uColorC;
 
 attribute vec3 aPositionTarget;
 attribute float aSize;
@@ -28,34 +24,7 @@ varying vec3 vColor;
 #define PI 3.1415926535897932384626433832795
 
 #include ../includes/simplexNoise3d.glsl
-#include ../includes/perlin4d.glsl
 #include ../includes/perlin3d.glsl
-#include ../includes/waves.glsl
-#include ../includes/perodic.glsl
-
-vec4 getDisplacedPosition(vec3 _position) {
-    vec3 displacementPosition = _position;
-    displacementPosition += perlin4d(vec4(displacementPosition * uDistortionFrequency, uTime * uTimeFrequency)) * uDistortionStrength;
-
-    float perlinStrength = perlin4d(vec4(displacementPosition * uDisplacementFrequency, uTime * uTimeFrequency));
-
-    vec3 displacedPosition = _position;
-    displacedPosition += normalize(_position) * perlinStrength * uDisplacementStrength;
-
-    return vec4(displacedPosition, perlinStrength);
-}
-
-vec4 getSphereDisplacedPosition(vec3 _position) {
-    vec3 displacementPosition = _position;
-    displacementPosition += perlin4d(vec4(displacementPosition * uDistortionFrequency, 10.0 * uTimeFrequency)) * uDistortionStrength;
-
-    float perlinStrength = perlin4d(vec4(displacementPosition * uDisplacementFrequency, 10.0 * uTimeFrequency));
-
-    vec3 displacedPosition = _position;
-    displacedPosition += normalize(_position) * perlinStrength * uDisplacementStrength;
-
-    return vec4(displacedPosition, perlinStrength);
-}
 
 vec3 applyWaveFunction(vec3 position) {
     // Generate Perlin noise based on position and time
@@ -82,33 +51,33 @@ vec3 rotateY(vec3 v, float angle) {
     return rotation3dY(angle) * v;
 }
 
-// Function to create a Z-axis rotation matrix
-mat3 rotation3dZ(float angle) {
+mat3 rotation3dX(float angle) {
     float s = sin(angle);
     float c = cos(angle);
 
-    return mat3(c, s, 0.0, -s, c, 0.0, 0.0, 0.0, 1.0);
+    return mat3(1.0, 0.0, 0.0, 0.0, c, s, 0.0, -s, c);
 }
 
-vec3 rotateZ(vec3 v, float angle) {
-    return rotation3dZ(angle) * v;
+vec3 rotateX(vec3 v, float angle) {
+    return rotation3dX(angle) * v;
 }
 
+float smoothBlend(float edge0, float edge1, float x) {
+    x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+    return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
+}
 
+float easeInOutCubic(float t) {
+    return t < 0.75 ? 4.0 * t * t * t : 1.0 - pow(-2.0 * t + 2.0, 3.0) / 2.0;
+}
 
 void main() {
-    // float progress = 0.5;
-
     float noiseOrigin = simplexNoise3d(position * 0.25);
     float noiseTarget = simplexNoise3d(aPositionTarget * 0.25);
-
-
     float noise = mix(noiseOrigin, noiseTarget, uProgress);
-    noise = smoothstep(-1.0, 1.0, noise);
-
+    noise = smoothBlend(-1.0, 1.0, noise);
     noise = pow(noise, 2.0);
-    
-    noise = smoothstep(-1.0, 1.0, noise);
+
 
     float duration = 0.4;
     float delay = (1.0 - duration) * noise;
@@ -116,69 +85,35 @@ void main() {
     float progress = smoothstep(delay, end, uProgress);
 
     vec3 mixedPosition = mix(position, aPositionTarget, progress);
+    vec3 displacedPosition;
+    
+    progress = pow(progress, 3.0);
 
-    if(progress <= 0.85) {
-        mixedPosition = applyWaveFunction(mixedPosition);
-    }
-    float distortion = pnoise((mixedPosition + 100.0 * 0.1), vec3(10.0) * 2.0) * 1.0;
-    // displace the position
-    vec3 pos = mixedPosition + distortion * 0.25;
-
-    vec4 displacedPosition = getDisplacedPosition(mixedPosition) * 0.01;
-
-    displacedPosition.xyz += pos;
-
-    if(progress >= 0.85) {
-        displacedPosition = getSphereDisplacedPosition(mixedPosition) * 0.01;
-        displacedPosition.xyz += pos.xyz * 1.1;
-        float angle = mod(sin(mixedPosition.y * 0.5 + uTime * 0.2) * 10.0, 360.0);
-        displacedPosition.xyz = rotateY(displacedPosition.xyz, angle * PI * 0.1);
+    if(progress < 0.65){
+        displacedPosition.xyz = applyWaveFunction(mixedPosition) * (1.0 - progress) * 0.01;
+        displacedPosition *= 150.0;
+        displacedPosition.y -= pow(progress * 1.2, 3.0);
+    }else{
+        displacedPosition.xyz = rotateX(mixedPosition, uRotationX * PI * easeInOutCubic(progress));
+        displacedPosition *= pow(progress * 1.1, 2.0);
+        displacedPosition.y -= pow(progress * 1.2, 3.0);
     }
 
-    if(progress < 0.85) {
-        displacedPosition = getDisplacedPosition(mixedPosition) * 0.01;
-        displacedPosition.x *= 150.0;
-        displacedPosition.y *= 150.0;
-        displacedPosition.z *= 150.0;
-    }
-    displacedPosition.y -= pow(progress * 1.2, 3.0);
+    if(progress >= 0.65) displacedPosition.xyz = rotateY(displacedPosition.xyz, uTime * 0.35 * pow(progress, 2.0));
+    
 
     // Final position
     vec4 modelPosition = modelMatrix * vec4(displacedPosition.xyz, 1.0);
-
-    // tilt the modelPosition around the z axis
-    float tiltAngle = pow(progress, 10.0) + 0.05;
-
-    modelPosition.xyz = rotateZ(modelPosition.xyz, tiltAngle);
-    modelPosition.x -= (progress + 0.5);
-    modelPosition.y -= (progress);
-
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * viewPosition;
     gl_Position = projectedPosition;
 
     // Point size
-    float size = uSize;
-    if(progress > 0.5) {
-        size -= progress * 0.4;
-    } else {
-        size = uSize * 1.5;
-    }
-
-    gl_PointSize = aSize * size * uResolution.y * 10.0;
-    if(progress > 0.75) {
-        gl_PointSize = ((pow((aSize * distortion * size) + 0.6, 2.0)) * ((0.5 + uResolution.y) * 12.0));
-    }
-    gl_PointSize *= (0.9 / -viewPosition.z);
+    if(progress > 0.5) gl_PointSize = aSize * uSize * uResolution.y * 8.0 * progress; 
+    else gl_PointSize = aSize * uSize * uResolution.y * 25.0 * (1.0 - progress);
+    
+    gl_PointSize *= (1.0 / -viewPosition.z);
 
     //varyings
-
-    // distortion = pow(distortion, 3.0);
-
-    if(progress >= 0.85) {
-        vColor = mix(uColorC, uColorA, pow(distortion, 2.0));
-    } else {
-        vColor = mix(uColorB, uColorA, pow(distortion, 2.0));
-    }
-
+    vColor = mix(uColorB, uColorA, mod(pow(noise, 3.0), 1.0) );
 }

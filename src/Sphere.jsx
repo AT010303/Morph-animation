@@ -12,7 +12,7 @@ const Sphere = () => {
 
     let particles = {};
 
-    const model = useGLTF('./model4.glb');
+    const model = useGLTF('./model.glb');
 
     const positions = model.scene.children.map((child) => {
         return child.geometry.attributes.position;
@@ -37,19 +37,19 @@ const Sphere = () => {
 
         for (let i = 0; i < particles.maxCount; i++) {
             const i3 = i * 3;
-            if (position.count > 33130) {
+            if (position.count < 22900) {
                 if (i3 < originalArray.length) {
-                    newArray[i3] = originalArray[i3] * 3.0;
-                    newArray[i3 + 1] = originalArray[i3 + 1] * 3.0 ;
-                    newArray[i3 + 2] = originalArray[i3 + 2] * 3.0 ;
+                    newArray[i3] = originalArray[i3] * 0.05;
+                    newArray[i3 + 1] = originalArray[i3 + 1] * 0.05;
+                    newArray[i3 + 2] = originalArray[i3 + 2] * 0.05;
                 } else {
                     const ramdomIndex =
                         Math.floor(position.count * Math.random()) * 3;
                     // console.log(ramdomIndex);
 
-                    newArray[i3] = originalArray[ramdomIndex] * 3.0;
-                    newArray[i3 + 1] = originalArray[ramdomIndex + 1] * 3.0;
-                    newArray[i3 + 2] = originalArray[ramdomIndex + 2] * 3.0;
+                    newArray[i3] = originalArray[ramdomIndex] * 0.05;
+                    newArray[i3 + 1] = originalArray[ramdomIndex + 1] * 0.05;
+                    newArray[i3 + 2] = originalArray[ramdomIndex + 2] * 0.05;
                 }
             } else {
                 if (i3 < originalArray.length) {
@@ -59,8 +59,6 @@ const Sphere = () => {
                 } else {
                     const ramdomIndex =
                         Math.floor(position.count * Math.random()) * 3;
-                    // console.log(ramdomIndex);
-
                     newArray[i3] = originalArray[ramdomIndex] * 20.0 + 3.0;
                     newArray[i3 + 1] =
                         originalArray[ramdomIndex + 1] * 2.0 + 3.0;
@@ -74,8 +72,6 @@ const Sphere = () => {
         particles.positions.push(new THREE.Float32BufferAttribute(newArray, 3));
     }
 
-    // console.log(particles.positions);
-
     const sizesArray = new Float32Array(particles.maxCount);
 
     for (let i = 0; i < particles.maxCount; i++) {
@@ -84,7 +80,7 @@ const Sphere = () => {
 
     particles.geometry = new THREE.BufferGeometry();
     particles.geometry.setAttribute('position', particles.positions[1]);
-    // particles.geometry.setIndex(null);
+    particles.geometry.setIndex(null);
     particles.geometry.setAttribute('aPositionTarget', particles.positions[0]);
     particles.geometry.setAttribute(
         'aSize',
@@ -94,28 +90,32 @@ const Sphere = () => {
     const particleControls = useControls('Particles', {
         uSize: { value: 1.0, min: 0.1, max: 10, step: 0.1 },
         progress: { value: 0, min: 0, max: 1, step: 0.001 },
-        DistortionFrequency: { value: 0.2, min: 0.0, max: 10.0 },
-        DistortionStrength: { value: 0.0, min: 0.0, max: 10.0 },
-        DisplacementFrequency: { value: 0.0, min: 0.0, max: 10.0 },
-        DisplacementStrength: { value: 0.0, min: 0.0, max: 3.0, step: 0.1 },
-        TimeFrequency: { value: 0.24, min: 0.0, max: 1.0, step: 0.01 },
-        DistortionFrequencyWave: { value: 0.00, min: 0.0, max: 1.0, step: 0.01 },
-        DistortionStrengthWave: { value: 1.65, min: 0.0, max: 10.0, step: 0.01 },
-        DisplacementFrequencyWave: {
-            value: 0.17,
+        RotateX: { value: 1.5, min: -10.0, max: 10.0, step: 0.01 },
+        TimeFrequency: { value: 0.25, min: 0.0, max: 1.0, step: 0.01 },
+        DistortionFrequencyWave: {
+            value: 0.05,
             min: 0.0,
             max: 1.0,
             step: 0.01
         },
-        DisplacementStrengthWave: { value: 1.0, min: 0.0, max: 5.0, step: 0.1 }
+        DistortionStrengthWave: {
+            value: 3.0,
+            min: 0.0,
+            max: 10.0,
+            step: 0.01
+        },
+        DisplacementFrequencyWave: {
+            value: 0.15,
+            min: 0.0,
+            max: 1.0,
+            step: 0.01
+        },
+        DisplacementStrengthWave: { value: 1.5, min: 0.0, max: 5.0, step: 0.1 }
     });
 
     const particleColorControls = useControls('Particles Colors', {
         colorA: '#EB2329',
-        // colorA: '#0000ff',
-        colorB: '#ff0000',
-        colorC: '#200000',
-
+        colorB: '#ff0000'
     });
 
     // Sizes
@@ -127,7 +127,6 @@ const Sphere = () => {
 
     particles.colorA = particleColorControls.colorA;
     particles.colorB = particleColorControls.colorB;
-    particles.colorC = particleColorControls.colorC;
 
     const uniforms = useMemo(
         () => ({
@@ -140,20 +139,10 @@ const Sphere = () => {
                 )
             },
             uProgress: { value: particleControls.progress },
-            uDistortionFrequency: {
-                value: particleControls.DistortionFrequency
-            },
-            uDistortionStrength: { value: particleControls.DistortionStrength },
-            uDisplacementFrequency: {
-                value: particleControls.DisplacementFrequency
-            },
-            uDisplacementStrength: {
-                value: particleControls.DisplacementStrength
-            },
+            uRotationX: { value: particleControls.RotateX },
             uTimeFrequency: { value: particleControls.TimeFrequency },
             uColorA: { value: new THREE.Color(particles.colorA) },
             uColorB: { value: new THREE.Color(particles.colorB) },
-            uColorC: { value: new THREE.Color(particles.colorC) },
             uDistortionFrequencyWave: {
                 value: particleControls.DistortionFrequencyWave
             },
@@ -173,8 +162,7 @@ const Sphere = () => {
             pixelRatio,
             particleControls,
             particles.colorA,
-            particles.colorB,
-            particles.colorC
+            particles.colorB
         ]
     );
 
@@ -192,9 +180,7 @@ const Sphere = () => {
     );
 
     useFrame((state) => {
-        uniforms.uTime.value = state.clock.elapsedTime;
-
-        // console.log(uniforms.uTime.value);
+        uniforms.uTime.value = state.clock.elapsedTime + 50;
     });
 
     useEffect(() => {
@@ -208,10 +194,8 @@ const Sphere = () => {
         uniforms.uProgress.value = scroll.offset;
     });
 
-    // console.log(particles);
-
     return <points ref={pointsRef} args={[particles.geometry, material]} />;
 };
 
-useGLTF.preload('./model4.glb');
+useGLTF.preload('./model.glb');
 export default Sphere;
