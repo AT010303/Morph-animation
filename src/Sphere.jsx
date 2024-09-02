@@ -53,7 +53,7 @@ const Sphere = () => {
                 }
             } else {
                 if (i3 < originalArray.length) {
-                    newArray[i3] = originalArray[i3] * 20.0;
+                    newArray[i3] = originalArray[i3] * 20.0 + 3.0;
                     newArray[i3 + 1] = originalArray[i3 + 1] * 2.0 + 3.0;
                     newArray[i3 + 2] = originalArray[i3 + 2] * 15.0;
                 } else {
@@ -61,7 +61,7 @@ const Sphere = () => {
                         Math.floor(position.count * Math.random()) * 3;
                     // console.log(ramdomIndex);
 
-                    newArray[i3] = originalArray[ramdomIndex] * 20.0;
+                    newArray[i3] = originalArray[ramdomIndex] * 20.0 + 3.0;
                     newArray[i3 + 1] =
                         originalArray[ramdomIndex + 1] * 2.0 + 3.0;
                     newArray[i3 + 2] = originalArray[ramdomIndex + 2] * 15.0;
@@ -92,22 +92,22 @@ const Sphere = () => {
     );
 
     const particleControls = useControls('Particles', {
-        uSize: { value: 1.2, min: 0.1, max: 10, step: 0.1 },
+        uSize: { value: 1.0, min: 0.1, max: 10, step: 0.1 },
         progress: { value: 0, min: 0, max: 1, step: 0.001 },
         DistortionFrequency: { value: 0.2, min: 0.0, max: 10.0 },
         DistortionStrength: { value: 2.0, min: 0.0, max: 10.0 },
         DisplacementFrequency: { value: 0.6, min: 0.0, max: 10.0 },
         DisplacementStrength: { value: 0.5, min: 0.0, max: 3.0, step: 0.1 },
         TimeFrequency: { value: 0.5, min: 0.0, max: 1.0, step: 0.01 },
-        DistortionFrequencyWave: { value: 0.1, min: 0.0, max: 1.0, step: 0.01 },
+        DistortionFrequencyWave: { value: 0.05, min: 0.0, max: 1.0, step: 0.01 },
         DistortionStrengthWave: { value: 5.0, min: 0.0, max: 10.0, step: 0.01 },
         DisplacementFrequencyWave: {
-            value: 0.2,
+            value: 0.13,
             min: 0.0,
             max: 1.0,
             step: 0.01
         },
-        DisplacementStrengthWave: { value: 1.5, min: 0.0, max: 5.0, step: 0.1 }
+        DisplacementStrengthWave: { value: 1.3, min: 0.0, max: 5.0, step: 0.1 }
     });
 
     const particleColorControls = useControls('Particles Colors', {

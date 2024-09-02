@@ -1,3 +1,5 @@
+precision highp float;
+
 uniform float uTime;
 uniform float uDistortionFrequency;
 uniform float uDistortionStrength;
@@ -80,30 +82,33 @@ vec3 rotateY(vec3 v, float angle) {
     return rotation3dY(angle) * v;
 }
 
-
 // Function to create a Z-axis rotation matrix
 mat3 rotation3dZ(float angle) {
     float s = sin(angle);
     float c = cos(angle);
 
-    return mat3(c, s, 0.0,
-               -s, c, 0.0,
-                0.0, 0.0, 1.0);
+    return mat3(c, s, 0.0, -s, c, 0.0, 0.0, 0.0, 1.0);
 }
 
 vec3 rotateZ(vec3 v, float angle) {
     return rotation3dZ(angle) * v;
 }
 
+
+
 void main() {
     // float progress = 0.5;
 
-    float noiseOrigin = simplexNoise3d(position * 0.2);
-    float noiseTarget = simplexNoise3d(aPositionTarget * 0.2);
+    float noiseOrigin = simplexNoise3d(position * 0.25);
+    float noiseTarget = simplexNoise3d(aPositionTarget * 0.25);
+
+
     float noise = mix(noiseOrigin, noiseTarget, uProgress);
     noise = smoothstep(-1.0, 1.0, noise);
 
-    noise = pow(noise, 3.0);
+    noise = pow(noise, 2.0);
+    
+    noise = smoothstep(-1.0, 1.0, noise);
 
     float duration = 0.4;
     float delay = (1.0 - duration) * noise;
@@ -112,7 +117,7 @@ void main() {
 
     vec3 mixedPosition = mix(position, aPositionTarget, progress);
 
-    if(progress <= 0.45) {
+    if(progress <= 0.5) {
         mixedPosition = applyWaveFunction(mixedPosition);
     }
     float distortion = pnoise((mixedPosition + 100.0 * 0.1), vec3(10.0) * 2.0) * 1.0;
@@ -123,30 +128,27 @@ void main() {
 
     displacedPosition.xyz += pos;
 
-    if(progress >= 0.25) {
+    if(progress >= 0.5) {
         displacedPosition = getSphereDisplacedPosition(mixedPosition) * 0.01;
         displacedPosition.xyz += pos.xyz * 1.1;
-        float angle = mod(sin(mixedPosition.y * 0.5 + uTime * 0.25) * 10.0, 360.0);
+        float angle = mod(sin(mixedPosition.y * 0.5 + uTime * 0.2) * 10.0, 360.0);
         displacedPosition.xyz = rotateY(displacedPosition.xyz, angle * PI * 0.1);
     }
 
-    if(progress < 0.25) {
+    if(progress < 0.5) {
         displacedPosition = getDisplacedPosition(mixedPosition) * 0.01;
         displacedPosition.x *= 150.0;
         displacedPosition.y *= 150.0;
         displacedPosition.z *= 150.0;
-
     }
     displacedPosition.y -= pow(progress * 1.2, 3.0);
-
-    
 
     // Final position
     vec4 modelPosition = modelMatrix * vec4(displacedPosition.xyz, 1.0);
 
     // tilt the modelPosition around the z axis
-    float tiltAngle =  pow(progress, 10.0) + 0.05;
-    
+    float tiltAngle = pow(progress, 10.0) + 0.05;
+
     modelPosition.xyz = rotateZ(modelPosition.xyz, tiltAngle);
     modelPosition.x -= (progress + 0.5);
     modelPosition.y -= (progress);
