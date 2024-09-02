@@ -69,7 +69,7 @@ const Sphere = () => {
             }
         }
 
-        console.log(position.count);
+        // console.log(position.count);
 
         particles.positions.push(new THREE.Float32BufferAttribute(newArray, 3));
     }
@@ -95,19 +95,19 @@ const Sphere = () => {
         uSize: { value: 1.0, min: 0.1, max: 10, step: 0.1 },
         progress: { value: 0, min: 0, max: 1, step: 0.001 },
         DistortionFrequency: { value: 0.2, min: 0.0, max: 10.0 },
-        DistortionStrength: { value: 2.0, min: 0.0, max: 10.0 },
-        DisplacementFrequency: { value: 0.6, min: 0.0, max: 10.0 },
-        DisplacementStrength: { value: 0.5, min: 0.0, max: 3.0, step: 0.1 },
-        TimeFrequency: { value: 0.5, min: 0.0, max: 1.0, step: 0.01 },
-        DistortionFrequencyWave: { value: 0.05, min: 0.0, max: 1.0, step: 0.01 },
-        DistortionStrengthWave: { value: 5.0, min: 0.0, max: 10.0, step: 0.01 },
+        DistortionStrength: { value: 0.0, min: 0.0, max: 10.0 },
+        DisplacementFrequency: { value: 0.0, min: 0.0, max: 10.0 },
+        DisplacementStrength: { value: 0.0, min: 0.0, max: 3.0, step: 0.1 },
+        TimeFrequency: { value: 0.24, min: 0.0, max: 1.0, step: 0.01 },
+        DistortionFrequencyWave: { value: 0.00, min: 0.0, max: 1.0, step: 0.01 },
+        DistortionStrengthWave: { value: 1.65, min: 0.0, max: 10.0, step: 0.01 },
         DisplacementFrequencyWave: {
-            value: 0.13,
+            value: 0.17,
             min: 0.0,
             max: 1.0,
             step: 0.01
         },
-        DisplacementStrengthWave: { value: 1.3, min: 0.0, max: 5.0, step: 0.1 }
+        DisplacementStrengthWave: { value: 1.0, min: 0.0, max: 5.0, step: 0.1 }
     });
 
     const particleColorControls = useControls('Particles Colors', {

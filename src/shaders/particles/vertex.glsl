@@ -117,7 +117,7 @@ void main() {
 
     vec3 mixedPosition = mix(position, aPositionTarget, progress);
 
-    if(progress <= 0.5) {
+    if(progress <= 0.85) {
         mixedPosition = applyWaveFunction(mixedPosition);
     }
     float distortion = pnoise((mixedPosition + 100.0 * 0.1), vec3(10.0) * 2.0) * 1.0;
@@ -128,14 +128,14 @@ void main() {
 
     displacedPosition.xyz += pos;
 
-    if(progress >= 0.5) {
+    if(progress >= 0.85) {
         displacedPosition = getSphereDisplacedPosition(mixedPosition) * 0.01;
         displacedPosition.xyz += pos.xyz * 1.1;
         float angle = mod(sin(mixedPosition.y * 0.5 + uTime * 0.2) * 10.0, 360.0);
         displacedPosition.xyz = rotateY(displacedPosition.xyz, angle * PI * 0.1);
     }
 
-    if(progress < 0.5) {
+    if(progress < 0.85) {
         displacedPosition = getDisplacedPosition(mixedPosition) * 0.01;
         displacedPosition.x *= 150.0;
         displacedPosition.y *= 150.0;
