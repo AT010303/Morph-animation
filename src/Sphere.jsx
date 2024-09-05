@@ -9,26 +9,17 @@ import particlesVertexShader from './shaders/particles/vertex.glsl';
 
 const Sphere = () => {
     const pointsRef = useRef();
-
     let particles = {};
-
     const model = useGLTF('./model.glb');
-
     const positions = model.scene.children.map((child) => {
         return child.geometry.attributes.position;
     });
-
-    // console.log(positions);
     particles.maxCount = 0;
-
     for (const position of positions) {
         if (position.count > particles.maxCount) {
             particles.maxCount = position.count;
         }
     }
-
-    // console.log(particles.maxCount);
-
     particles.positions = [];
     for (const position of positions) {
         const originalArray = position.array;
@@ -45,30 +36,25 @@ const Sphere = () => {
                 } else {
                     const ramdomIndex =
                         Math.floor(position.count * Math.random()) * 3;
-                    // console.log(ramdomIndex);
-
                     newArray[i3] = originalArray[ramdomIndex] * 0.05;
                     newArray[i3 + 1] = originalArray[ramdomIndex + 1] * 0.05;
                     newArray[i3 + 2] = originalArray[ramdomIndex + 2] * 0.05;
                 }
             } else {
                 if (i3 < originalArray.length) {
-                    newArray[i3] = originalArray[i3] * 20.0 + 3.0;
+                    newArray[i3] = originalArray[i3] * 20.0;
                     newArray[i3 + 1] = originalArray[i3 + 1] * 2.0 + 3.0;
                     newArray[i3 + 2] = originalArray[i3 + 2] * 15.0;
                 } else {
                     const ramdomIndex =
                         Math.floor(position.count * Math.random()) * 3;
-                    newArray[i3] = originalArray[ramdomIndex] * 20.0 + 3.0;
+                    newArray[i3] = originalArray[ramdomIndex] * 20.0;
                     newArray[i3 + 1] =
                         originalArray[ramdomIndex + 1] * 2.0 + 3.0;
                     newArray[i3 + 2] = originalArray[ramdomIndex + 2] * 15.0;
                 }
             }
         }
-
-        // console.log(position.count);
-
         particles.positions.push(new THREE.Float32BufferAttribute(newArray, 3));
     }
 
@@ -93,13 +79,13 @@ const Sphere = () => {
         RotateX: { value: 1.5, min: -10.0, max: 10.0, step: 0.01 },
         TimeFrequency: { value: 0.25, min: 0.0, max: 1.0, step: 0.01 },
         DistortionFrequencyWave: {
-            value: 0.05,
+            value: 0.08,
             min: 0.0,
             max: 1.0,
             step: 0.01
         },
         DistortionStrengthWave: {
-            value: 3.0,
+            value: 3.5,
             min: 0.0,
             max: 10.0,
             step: 0.01
@@ -114,8 +100,8 @@ const Sphere = () => {
     });
 
     const particleColorControls = useControls('Particles Colors', {
-        colorA: '#EB2329',
-        colorB: '#ff0000'
+        colorA: '#3018eb',
+        colorB: '#ff6f00'
     });
 
     // Sizes
